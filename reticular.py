@@ -4,6 +4,7 @@ Reticular is a lightweight Python module that can be used to create powerful com
 It lets you define commands easily, without losing flexibility and control.
 It can handle subcommand groups and supports interactive mode!
 """
+from contextlib import contextmanager
 import imp
 
 __author__ = "Héctor Ramón Jiménez, and Alvaro Espuña Buxo"
@@ -152,9 +153,22 @@ def global_arg(*args, **kwargs):
     return args, kwargs
 
 
+_INDENTATION = 0
+
+
+@contextmanager
 def say(*args):
+    global _INDENTATION
+
     for s in args:
-        print ">> %s" % s
+        print ('  ' * _INDENTATION) + s
+
+    _INDENTATION += 1
+
+    try:
+        yield
+    finally:
+        _INDENTATION -= 1
 
 
 def _get_parser(f):
