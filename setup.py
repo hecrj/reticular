@@ -5,7 +5,7 @@ from distutils.core import setup
 setup(
     name="reticular",
     py_modules=["reticular"],
-    version="0.0.1",
+    version="0.0.2",
     description="Lightweight module to create powerful command-line tools",
     author="Héctor Ramón Jiménez",
     author_email="hector0193@gmail.com",

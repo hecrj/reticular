@@ -4,6 +4,8 @@ Reticular is a lightweight Python module that can be used to create powerful com
 It lets you define commands easily, without losing flexibility and control.
 It can handle subcommand groups and supports interactive mode!
 """
+import imp
+
 __author__ = "Héctor Ramón Jiménez, and Alvaro Espuña Buxo"
 
 from functools import wraps
@@ -15,13 +17,13 @@ _COMMAND_GROUPS = {}
 
 
 class CLI(object):
-    def __init__(self, version, message='Welcome!', directory='.', package='commands'):
+    def __init__(self, name, version, message='Welcome!', package='commands'):
+        self.name = name
         self.message = message
-        self.directory = directory
         self.groups = {}
         self.interactive_mode = False
 
-        for path in self.list(directory, package):
+        for path in self.list(name, package):
             if path not in _COMMAND_GROUPS:
                 _COMMAND_GROUPS[path] = CommandGroup(path)
 
@@ -77,9 +79,15 @@ class CLI(object):
             cmd_group.register(self.base.parser_generator)
 
     @staticmethod
-    def list(directory, package):
-        return ("%s.%s" % (package, os.path.splitext(f)[0])
-                for f in os.listdir(os.path.join(directory, package)) if f.endswith('.py') and not f.startswith('_'))
+    def list(name, package):
+        main = imp.load_module(name, *imp.find_module(name))
+        f, pathname, description = imp.find_module(package, main.__path__)
+
+        if f:
+            raise ImportError('Not a package: %r', package)
+
+        return ("%s.%s.%s" % (name, package, os.path.splitext(f)[0])
+                for f in os.listdir(pathname) if f.endswith('.py') and not f.startswith('_'))
 
 
 class CommandGroup(object):
