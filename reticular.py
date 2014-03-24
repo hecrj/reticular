@@ -53,27 +53,27 @@ class CLI(object):
             func = parsed_args.pop('func')
             func(**parsed_args)
         except RuntimeError as e:
-            print 'ERROR: ' + e.message
+            print('ERROR: ' + e.message)
 
     def interactive(self):
         self.interactive_mode = True
-        print self.message
+        print(self.message)
 
         while True:
             try:
-                args = raw_input('>> ').split()
+                args = input('>> ').split()
                 self.run(args)
             except EOFError:
-                print
+                print()
                 exit(0)
             except KeyboardInterrupt:
-                print
+                print()
                 exit(1)
             except SystemExit:
                 pass
 
     def load_all(self):
-        for name, cmd_group in self.groups.iteritems():
+        for name, cmd_group in self.groups.items():
             cmd_group.load()
             cmd_group.populate()
             cmd_group.register(self.base.parser_generator)
@@ -116,7 +116,7 @@ class CommandGroup(object):
     def populate(self):
         self.parser.description = self._module.__doc__
 
-        for cmd, parser in self.parsers.iteritems():
+        for cmd, parser in self.parsers.items():
             for args, kwargs in getattr(self._module, 'ARGUMENTS', []):
                 parser.add_argument(*args, **kwargs)
 
@@ -157,7 +157,7 @@ class say:
 
     def __init__(self, *args):
         for s in args:
-            print ('  ' * say.INDENTATION) + s
+            print(('  ' * say.INDENTATION) + s)
 
     def __enter__(self):
         say.INDENTATION += 1
