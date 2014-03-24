@@ -15,6 +15,10 @@ from argparse import ArgumentParser
 
 _COMMAND_GROUPS = {}
 
+try:
+    input = raw_input
+except:
+    pass
 
 class CLI(object):
     def __init__(self, name, version, message='Welcome!', package='commands'):
