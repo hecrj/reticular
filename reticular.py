@@ -53,7 +53,7 @@ class CLI(object):
             func = parsed_args.pop('func')
             func(**parsed_args)
         except RuntimeError as e:
-            print('ERROR: ' + e.message)
+            print('ERROR: ' + str(e))
 
     def interactive(self):
         self.interactive_mode = True
