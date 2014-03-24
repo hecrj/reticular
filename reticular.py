@@ -4,7 +4,7 @@ Reticular is a lightweight Python module that can be used to create powerful com
 It lets you define commands easily, without losing flexibility and control.
 It can handle subcommand groups and supports interactive mode!
 """
-import imp
+import importlib
 
 __author__ = "Héctor Ramón Jiménez, and Alvaro Espuña Buxo"
 
@@ -80,14 +80,15 @@ class CLI(object):
 
     @staticmethod
     def list(name, package):
-        main = imp.load_module(name, *imp.find_module(name))
-        f, pathname, description = imp.find_module(package, main.__path__)
+        module = "%s.%s" % (name, package)
 
-        if f:
-            raise ImportError('Not a package: %r', package)
-
-        return ("%s.%s.%s" % (name, package, os.path.splitext(f)[0])
-                for f in os.listdir(pathname) if f.endswith('.py') and not f.startswith('_'))
+        try:
+            commands = importlib.import_module(module)
+            pathname = os.path.dirname(commands.__file__)
+            return ("%s.%s.%s" % (name, package, os.path.splitext(f)[0])
+                    for f in os.listdir(pathname) if f.endswith('.py') and not f.startswith('_'))
+        except ImportError:
+            raise RuntimeError("%s package not found" % module)
 
 
 class CommandGroup(object):
