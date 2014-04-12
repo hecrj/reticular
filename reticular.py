@@ -54,8 +54,14 @@ class CLI(object):
         try:
             parsed_args = self.base.parser.parse_args(args)
             parsed_args = vars(parsed_args)
-            func = parsed_args.pop('func')
-            func(**parsed_args)
+            func = parsed_args.pop('func', None)
+            if func is None:
+                try:
+                    self.groups[args[0]].parser.error("invalid number of arguments")
+                except KeyError:
+                    self.base.parser.error("invalid base command")
+            else:
+                func(**parsed_args)
         except RuntimeError as e:
             print('ERROR: ' + str(e))
 
